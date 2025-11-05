@@ -349,16 +349,101 @@
         }
 
         @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-content {
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
             .nav-links {
                 display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem 0;
+                text-align: center;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .cta-button {
+                width: 100%;
+                text-align: center;
+                padding: 0.625rem 1.25rem;
+                font-size: 0.8rem;
             }
 
             section {
-                padding: 6rem 1.5rem;
+                padding: 5rem 1.5rem;
+                min-height: auto;
+            }
+
+            h1 {
+                font-size: clamp(2rem, 10vw, 3rem);
+                line-height: 1.2;
+            }
+
+            h2 {
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .primary-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
             }
 
             .cards-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .stat-label {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .card h3 {
+                font-size: 1.25rem;
             }
         }
     </style>
@@ -384,9 +469,7 @@
             <div class="nav-content">
                 <div class="logo">AInSight</div>
                 <ul class="nav-links">
-                    <li><a href="#home">Home</a></li>
                     <li><a href="#features">Features</a></li>
-                    <li><a href="#services">Services</a></li>
                     <li><a href="ai-chat.html">AI Chat</a></li>
                     <li><a href="login.html">Login</a></li>
                 </ul>
