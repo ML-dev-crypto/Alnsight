@@ -12,8 +12,15 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+            -webkit-tap-highlight-color: transparen                <div class="chat-header">
+                    <div>
+                        <h2>💬 AI Chat Assistant</h2>
+                        <div class="model-info">TinyLlama 1.1B • Running locally in your browser</div>
+                    </div>
+                    <button onclick="clearChatHistory()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem;">
+                        🔄 Clear History
+                    </button>
+                </div>      }
 
         html {
             -webkit-text-size-adjust: 100%;
@@ -674,13 +681,17 @@
                         <h2>💬 AI Chat Assistant</h2>
                         <div class="model-info">TinyLlama 1.1B • Running locally in your browser</div>
                     </div>
+                    <button onclick="clearChatHistory()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem; font-weight: 600;">
+                        🔄 Clear History
+                    </button>
                 </div>
 
                 <div class="chat-window" id="chatWindow">
                     <div class="message system">
                         <div class="message-content">
                             <strong>✨ Welcome to AInSight AI Assistant</strong><br>
-                            Your personal AI is ready! All conversations stay private and secure in your browser.
+                            Your personal AI is ready! All conversations stay private and secure in your browser.<br><br>
+                            <small><strong>Note:</strong> TinyLlama is a small model (1.1B) - perfect for privacy but may give unexpected answers. Click "Clear History" button if responses become irrelevant.</small>
                         </div>
                     </div>
                 </div>
@@ -958,6 +969,26 @@
             chatWindow.appendChild(messageDiv);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
+
+        // Clear chat history
+        window.clearChatHistory = function() {
+            if (confirm('Clear all chat history? This will start a fresh conversation.')) {
+                // Clear the chat window except the welcome message
+                chatWindow.innerHTML = `
+                    <div class="message system">
+                        <div class="message-content">
+                            <strong>✨ Chat history cleared!</strong><br>
+                            Starting fresh. Your AI is ready for a new conversation.
+                        </div>
+                    </div>
+                `;
+                
+                // Clear the chat history in WebLLM
+                webLLM.clearHistory();
+                
+                console.log('✅ Chat history cleared');
+            }
+        };
 
         // Auto-initialize on page load
         window.addEventListener('DOMContentLoaded', initializeAI);
