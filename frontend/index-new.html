@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AInSight // Enterprise AI Platform</title>
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <span class="logo">AInSight</span>
+                <span class="tagline">// AI-Powered Enterprise Intelligence</span>
+            </div>
+            <div class="nav-links">
+                <a href="#problem">Problem</a>
+                <a href="#solution">Solution</a>
+                <a href="#features">Features</a>
+                <a href="#demo">Demo</a>
+                <a href="dashboard.html" class="btn-outline">Dashboard</a>
+                <a href="#" class="btn-primary" onclick="showLogin()">Login</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="grid-overlay"></div>
+            <canvas id="particles"></canvas>
+        </div>
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1 class="glitch" data-text="From Data Chaos to AI-Driven Clarity">
+                    From Data Chaos<br>to AI-Driven Clarity
+                </h1>
+                <p class="hero-description">
+                    The enterprise AI platform for modern teams. Real-time analytics, 
+                    on-device AI processing, and privacy-first intelligence for 10,000+ organizations.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn-hero-primary" onclick="showDemo()">Request Demo</button>
+                    <button class="btn-hero-secondary" onclick="scrollToSection('solution')">See How It Works</button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="10000">0</span>+
+                        <span class="stat-label">Organizations</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="50000">0</span>+
+                        <span class="stat-label">Active Users</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="99">0</span>%
+                        <span class="stat-label">Privacy Score</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <span class="terminal-dots">
+                            <span></span><span></span><span></span>
+                        </span>
+                        <span class="terminal-title">AI_PROCESSING_TERMINAL</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-line">[<span class="time">14:32:01</span>] <span class="status-success">DOCUMENT_ANALYZED</span> | TYPE: CONTRACT | CONFIDENCE: 98.5%</div>
+                        <div class="terminal-line">[<span class="time">14:32:05</span>] <span class="status-info">EMAIL_DRAFTED</span> | RECIPIENT: CLIENT | SENTIMENT: POSITIVE</div>
+                        <div class="terminal-line">[<span class="time">14:32:10</span>] <span class="status-warning">TASK_EXTRACTED</span> | COUNT: 7 | PRIORITY: HIGH</div>
+                        <div class="terminal-line">[<span class="time">14:32:14</span>] <span class="status-success">CODE_REVIEWED</span> | ISSUES: 0 | SUGGESTIONS: 3</div>
+                        <div class="terminal-line">[<span class="time">14:32:18</span>] <span class="status-info">ANALYTICS_UPDATED</span> | USERS: 143 | ACTIVE: 87%</div>
+                        <div class="terminal-line">[<span class="time">14:32:22</span>] <span class="status-success">AI_MODEL_READY</span> | STATUS: ONLINE | LATENCY: 12ms</div>
+                        <div class="terminal-line typing"><span class="cursor">▋</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator" onclick="scrollToSection('problem')">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow">↓</div>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section id="problem" class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2>PROBLEM STATEMENT</h2>
+            </div>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">⚠️</div>
+                    <h3>// Data Silos & Information Loss</h3>
+                    <p>
+                        Enterprise teams struggle with fragmented data across multiple platforms. 
+                        Critical insights are buried in documents, emails, and conversations—leading 
+                        to 30% productivity loss and missed opportunities.
+                    </p>
+                    <div class="problem-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">30%</span>
+                            <span class="stat-desc">Productivity Loss</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">47min</span>
+                            <span class="stat-desc">Average Search Time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">🔒</div>
+                    <h3>// Privacy & Compliance Risks</h3>
+                    <p>
+                        Cloud-based AI solutions expose sensitive business data to third-party servers. 
+                        GDPR, HIPAA, and SOC2 compliance becomes a legal minefield with potential 
+                        million-dollar penalties and reputational damage.
+                    </p>
+                    <div class="problem-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">$4.35M</span>
+                            <span class="stat-desc">Avg. Breach Cost</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">287 days</span>
+                            <span class="stat-desc">Detection Time</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="problem-card">
+                    <div class="problem-icon">⏱️</div>
+                    <h3>// Manual Workflows & Inefficiency</h3>
+                    <p>
+                        Knowledge workers spend 60% of their time on repetitive tasks: summarizing 
+                        documents, drafting emails, extracting action items, and searching for 
+                        information instead of strategic thinking.
+                    </p>
+                    <div class="problem-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">60%</span>
+                            <span class="stat-desc">Time on Repetitive Tasks</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">$19K</span>
+                            <span class="stat-desc">Cost per Employee/Year</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-slider">
+                <div class="comparison-header">
+                    <div class="comparison-before">
+                        <span class="status-label status-critical">STATUS: CRITICAL</span>
+                    </div>
+                    <div class="comparison-after">
+                        <span class="status-label status-solved">STATUS: SOLVED</span>
+                    </div>
+                </div>
+                <div class="comparison-content">
+                    <div class="comparison-col before">
+                        <div class="comparison-item">
+                            <span class="icon">❌</span>
+                            <span class="text">Manual document review</span>
+                            <span class="time">REPORTED: 10-25-2025</span>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="icon">❌</span>
+                            <span class="text">Cloud data exposure</span>
+                            <span class="time">PRIVACY: 0%</span>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="icon">❌</span>
+                            <span class="text">Fragmented workflows</span>
+                            <span class="time">EFFICIENCY: 40%</span>
+                        </div>
+                    </div>
+                    <div class="comparison-divider">
+                        <span>← DRAG TO COMPARE →</span>
+                    </div>
+                    <div class="comparison-col after">
+                        <div class="comparison-item">
+                            <span class="icon">✓</span>
+                            <span class="text">AI-powered analysis</span>
+                            <span class="time">COMPLETED: 11-01-2025</span>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="icon">✓</span>
+                            <span class="text">On-device processing</span>
+                            <span class="time">PRIVACY: 100%</span>
+                        </div>
+                        <div class="comparison-item">
+                            <span class="icon">✓</span>
+                            <span class="text">Unified AI platform</span>
+                            <span class="time">EFFICIENCY: 94%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="solution" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2>PROPOSED SOLUTION</h2>
+                <p class="section-subtitle">
+                    Our AI-driven platform leverages on-device processing and advanced analytics 
+                    to transform enterprise workflows. The system is designed to:
+                </p>
+            </div>
+
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <div class="solution-badge">[+] PROCESS LOCALLY</div>
+                    <h3>Privacy-First AI</h3>
+                    <p>
+                        All AI processing happens on-device using WebLLM and WebGPU. Your sensitive 
+                        data never leaves your organization—ensuring 100% privacy compliance with 
+                        GDPR, HIPAA, and SOC2.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">WebLLM</span>
+                        <span class="tech-tag">WebGPU</span>
+                        <span class="tech-tag">IndexedDB</span>
+                    </div>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-badge">[+] ANALYZE INSTANTLY</div>
+                    <h3>Real-Time Intelligence</h3>
+                    <p>
+                        AI-powered document summarization, email drafting, task extraction, and code 
+                        review—all in milliseconds. Transform hours of manual work into seconds of 
+                        automated intelligence.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">TinyLlama</span>
+                        <span class="tech-tag">Phi-3</span>
+                        <span class="tech-tag">Gemma-2B</span>
+                    </div>
+                </div>
+
+                <div class="solution-card">
+                    <div class="solution-badge">[+] COLLABORATE SEAMLESSLY</div>
+                    <h3>Unified Workspace</h3>
+                    <p>
+                        Team dashboards, analytics, announcements, and task management—all integrated 
+                        with AI assistance. Real-time collaboration with intelligent automation at 
+                        every step.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-tag">Real-time Sync</span>
+                        <span class="tech-tag">Role-based Access</span>
+                        <span class="tech-tag">Analytics</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="architecture-section">
+                <h3 class="architecture-title">SYSTEM ARCHITECTURE</h3>
+                <div class="architecture-flow">
+                    <div class="flow-step">
+                        <div class="flow-number">01</div>
+                        <div class="flow-content">
+                            <h4>DATA INGESTION</h4>
+                            <p>User uploads documents, emails, or text</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-number">02</div>
+                        <div class="flow-content">
+                            <h4>AI PROCESSING</h4>
+                            <p>On-device WebLLM analyzes content</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-number">03</div>
+                        <div class="flow-content">
+                            <h4>DUAL PATHWAYS</h4>
+                            <p>[A] Summarization [B] Task extraction</p>
+                        </div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-number">04</div>
+                        <div class="flow-content">
+                            <h4>OUTPUT GENERATION</h4>
+                            <p>Insights, drafts, analytics delivered</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2>A PLATFORM FOR EVERYONE</h2>
+                <p class="section-subtitle">
+                    Designed for the entire enterprise ecosystem—from executives to developers to team members.
+                </p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('admins')">For Administrators</button>
+                <button class="tab-btn" onclick="switchTab('developers')">For Developers</button>
+                <button class="tab-btn" onclick="switchTab('teams')">For Teams</button>
+            </div>
+
+            <div class="tab-content">
+                <div id="admins-tab" class="tab-panel active">
+                    <div class="feature-showcase">
+                        <div class="feature-text">
+                            <h3>🖥️ For Administrators</h3>
+                            <p>
+                                Monitor team performance, track project KPIs, and get a bird's-eye view 
+                                of all activities. Make data-driven decisions with predictive analytics 
+                                and transparent access management.
+                            </p>
+                            <ul class="feature-list">
+                                <li>✓ Interactive analytics dashboards</li>
+                                <li>✓ Real-time team monitoring</li>
+                                <li>✓ Role-based access control</li>
+                                <li>✓ Predictive insights & trends</li>
+                                <li>✓ Automated compliance reporting</li>
+                            </ul>
+                            <button class="btn-feature" onclick="window.location.href='dashboard.html'">Try Admin Dashboard</button>
+                        </div>
+                        <div class="feature-visual">
+                            <div class="dashboard-preview">
+                                <div class="preview-card">
+                                    <span class="preview-icon">📊</span>
+                                    <span class="preview-title">Analytics Engine</span>
+                                </div>
+                                <div class="preview-card">
+                                    <span class="preview-icon">👥</span>
+                                    <span class="preview-title">User Management</span>
+                                </div>
+                                <div class="preview-card">
+                                    <span class="preview-icon">📢</span>
+                                    <span class="preview-title">Announcements</span>
+                                </div>
+                                <div class="preview-card">
+                                    <span class="preview-icon">✓</span>
+                                    <span class="preview-title">Task Tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="developers-tab" class="tab-panel">
+                    <div class="feature-showcase">
+                        <div class="feature-text">
+                            <h3>💻 For Developers</h3>
+                            <p>
+                                AI-powered code review, documentation generation, and bug detection. 
+                                Integrate with your existing workflow through REST APIs and webhooks.
+                            </p>
+                            <ul class="feature-list">
+                                <li>✓ Code analysis & suggestions</li>
+                                <li>✓ Automated documentation</li>
+                                <li>✓ API endpoints & SDKs</li>
+                                <li>✓ Git integration hooks</li>
+                                <li>✓ Performance profiling</li>
+                            </ul>
+                            <button class="btn-feature" onclick="window.location.href='webllm-demo.html'">Try AI Demo</button>
+                        </div>
+                        <div class="feature-visual">
+                            <div class="code-preview">
+                                <pre><code>// Initialize AInSight AI
+import { WebLLMAIEngine } from './webllm-ai.js';
+
+const ai = new WebLLMAIEngine();
+await ai.initialize();
+
+// Analyze code
+const result = await ai.chat(
+  "Review this function for bugs"
+);
+
+console.log(result.response);
+// "✓ No critical issues found"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="teams-tab" class="tab-panel">
+                    <div class="feature-showcase">
+                        <div class="feature-text">
+                            <h3>👥 For Teams</h3>
+                            <p>
+                                Collaborate with AI assistance. Summarize meeting notes, extract action 
+                                items, draft emails, and manage tasks—all with enterprise-grade security.
+                            </p>
+                            <ul class="feature-list">
+                                <li>✓ Document summarization</li>
+                                <li>✓ Email drafting assistant</li>
+                                <li>✓ Task extraction from text</li>
+                                <li>✓ Meeting transcription</li>
+                                <li>✓ Knowledge base search</li>
+                            </ul>
+                            <button class="btn-feature" onclick="showDemo()">Request Access</button>
+                        </div>
+                        <div class="feature-visual">
+                            <div class="chat-preview">
+                                <div class="chat-message user">
+                                    Summarize this document in 3 key points
+                                </div>
+                                <div class="chat-message ai">
+                                    <strong>Key Points:</strong><br>
+                                    1. Q4 revenue increased 23% YoY<br>
+                                    2. New product launch scheduled March<br>
+                                    3. Team expansion to 5 new markets
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section section-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to transform your enterprise with AI?</h2>
+                <p>Join 10,000+ organizations using AInSight for intelligent automation.</p>
+                <div class="cta-actions">
+                    <button class="btn-cta-primary" onclick="showDemo()">Request a Demo</button>
+                    <button class="btn-cta-secondary" onclick="window.location.href='webllm-demo.html'">Try AI Assistant</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>AInSight</h4>
+                    <p class="footer-tagline">// Powered by On-Device AI & Real-time Analytics</p>
+                </div>
+                <div class="footer-col">
+                    <h5>Platform</h5>
+                    <a href="#problem">Problem</a>
+                    <a href="#solution">Solution</a>
+                    <a href="#features">Features</a>
+                    <a href="dashboard.html">Dashboard</a>
+                </div>
+                <div class="footer-col">
+                    <h5>Resources</h5>
+                    <a href="README.md">Documentation</a>
+                    <a href="QUICKSTART.md">Quick Start</a>
+                    <a href="TROUBLESHOOTING.md">Support</a>
+                </div>
+                <div class="footer-col">
+                    <h5>Connect</h5>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">GitHub</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 AInSight. All rights reserved. Built for smarter, more secure enterprises.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeLogin()">&times;</span>
+            <h2>Login to AInSight</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-modal">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/modern-theme.js"></script>
+</body>
+</html>

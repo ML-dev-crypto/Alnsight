@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AInSight // AI Assistant Demo</title>
+    <link rel="stylesheet" href="css/modern-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            background: var(--bg-primary);
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 3D Background Canvas */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Content overlay */
+        .demo-container {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .demo-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-family: var(--font-mono);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-offline {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .status-loading {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+        }
+
+        .model-option {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .model-option:hover {
+            border-color: #667eea;
+            background: #f9fafb;
+        }
+
+        .model-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+        }
+
+        .model-option h4 {
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .model-option .specs {
+            font-size: 0.85em;
+            color: #6b7280;
+            margin: 5px 0;
+        }
+
+        .init-section {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chat-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-panel h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-family: var(--font-mono);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.6;
+            animation: messageSlideIn 0.3s ease;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            margin-left: auto;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .message.assistant {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            margin-right: auto;
+        }
+
+        .message.system {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+            text-align: center;
+            margin: 10px auto;
+            max-width: 100%;
+            font-size: 0.9em;
+            font-family: var(--font-mono);
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input-area textarea {
+            flex: 1;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95em;
+            font-family: inherit;
+            resize: none;
+            height: 80px;
+            transition: border-color 0.2s ease;
+        }
+
+        .chat-input-area textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .chat-input-area textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .features-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+
+        .features-panel h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-family: var(--font-mono);
+        }
+
+        .feature-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: var(--bg-tertiary);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .feature-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card textarea {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .feature-card textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+        }
+
+        .feature-card textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .feature-card button {
+            width: 100%;
+        }
+
+        .output {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+            min-height: 60px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .output.success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--text-primary);
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--info);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box strong {
+            display: block;
+            color: var(--info);
+            margin-bottom: 8px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: var(--text-secondary);
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        /* Model selector styles */
+        .model-selector {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .init-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .init-section h3 {
+            color: var(--text-primary);
+        }
+        
+        .init-section p {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="canvas3d"></canvas>
+    <!-- Navigation Bar -->
+    <nav style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); padding: 1rem 2rem; margin: -2rem -2rem 2rem -2rem; display: flex; align-items: center; gap: 2rem;">
+        <a href="index-new.html" style="color: var(--primary); font-family: var(--font-mono); font-weight: 700; font-size: 1.25rem; text-decoration: none;">
+            ← AInSight
+        </a>
+        <span style="color: var(--text-muted); font-family: var(--font-mono);">// AI Assistant Demo</span>
+        <div style="flex: 1;"></div>
+        <a href="dashboard.html" style="color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">
+            Dashboard
+        </a>
+        <a href="index-new.html" style="color: var(--text-secondary); text-decoration: none; transition: color 0.2s;">
+            Home
+        </a>
+    </nav>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🧠 AInSight AI Assistant</h1>
+            <p class="subtitle">Privacy-First AI - Powered by On-Device Processing</p>
+            <div id="statusBadges">
+                <span class="status-badge status-loading">⚡ Auto-Initializing...</span>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>🚀 What makes AInSight special:</strong>
+            <ul>
+                <li>Runs powerful AI models directly in your browser</li>
+                <li>Uses WebGPU for GPU acceleration (10x faster than CPU)</li>
+                <li>Works 100% offline after initial download</li>
+                <li>No API keys, no cloud costs, complete privacy</li>
+                <li>All your data stays on your device</li>
+            </ul>
+        </div>
+
+        <!-- Loading Section (Auto-starts on page load) -->
+        <div id="loadingSection" class="init-section">
+            <div class="loading-spinner"></div>
+            <h3>Initializing AInSight AI Engine...</h3>
+            <p id="loadingText">Preparing your private AI assistant...</p>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill" style="width: 0%">0%</div>
+            </div>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 0.5rem;">
+                <div style="font-family: var(--font-mono); font-size: 0.875rem; color: var(--text-secondary);">
+                    <strong style="color: var(--primary);">Model:</strong> TinyLlama 1.1B<br>
+                    <strong style="color: var(--primary);">Size:</strong> ~600MB<br>
+                    <strong style="color: var(--primary);">Note:</strong> First-time setup downloads the model. Cached for instant offline use next time!
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" class="main-content" style="display: none;">
+            <!-- Chat Panel -->
+            <div class="chat-panel">
+                <h3>💬 AI Chat Assistant</h3>
+                <div id="chatMessages" class="chat-messages">
+                    <div class="message system">
+                        👋 Welcome to AInSight AI Assistant! I can help you with:
+                        <br>• 📝 Document summarization
+                        <br>• ✉️ Email drafting
+                        <br>• 💻 Code generation (C++, Python, JavaScript, etc.)
+                        <br>• 📋 Task extraction
+                        <br>• ❓ Questions & explanations
+                        <br><br>💡 <strong>Tip:</strong> For code snippets, ask clearly: "Write a Snake game in C++" or "Create a Python sorting algorithm"
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <textarea 
+                        id="chatInput" 
+                        placeholder="Ask me anything... Examples: 'Write a Snake game in C++', 'Explain recursion', 'Draft an email about...'"
+                    ></textarea>
+                    <button id="sendButton" style="width: 100px;">Send</button>
+                </div>
+                <button id="clearChatButton" style="margin-top: 10px; background: #6b7280;">
+                    Clear Chat
+                </button>
+            </div>
+
+            <!-- Features Panel -->
+            <div class="features-panel">
+                <h3>⚡ Quick Actions</h3>
+                
+                <div class="feature-card">
+                    <h4>📚 Summarize Document</h4>
+                    <textarea id="summarizeInput" placeholder="Paste your document here...">The quarterly board meeting was held on November 5th, 2025. Key discussions included the successful launch of AInSight, the company's new AI-powered productivity platform. Revenue exceeded projections by 23%, driven by strong enterprise adoption. The team discussed expansion plans for Q1 2026, including mobile app enhancements and new AI features. Budget allocation for R&D was increased by 15%. Security audit results were positive with no critical vulnerabilities found. Customer satisfaction scores improved to 94%. Next steps include hiring 5 new engineers and opening a European office.</textarea>
+                    <button onclick="quickSummarize()">Summarize</button>
+                    <div id="summaryOutput" class="output" style="display: none;"></div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>✉️ Draft Email</h4>
+                    <textarea id="emailInput" placeholder="Describe what you want to write...">I need to send an email to the team congratulating them on the successful Q4 launch and announcing our Q1 2026 goals</textarea>
+                    <button onclick="quickDraftEmail()">Draft Email</button>
+                    <div id="emailOutput" class="output" style="display: none;"></div>
+                </div>
+
+                <div class="feature-card">
+                    <h4>✓ Extract Tasks</h4>
+                    <textarea id="tasksInput" placeholder="Paste meeting notes...">Meeting notes: We need to complete the mobile app redesign by end of month. John will handle the backend API updates. Sarah needs to review and finalize the security documentation. Schedule follow-up with legal team next Tuesday. Update the website with new features by Friday.</textarea>
+                    <button onclick="quickExtractTasks()">Extract Tasks</button>
+                    <div id="tasksOutput" class="output" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import webLLM, { WebLLMAIEngine } from './js/webllm-ai.js';
+
+        // AInSight uses TinyLlama as the default AI model
+        const AINSIGHT_MODEL = 'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC';
+
+        // Check compatibility
+        async function checkCompatibility() {
+            const compat = await WebLLMAIEngine.checkCompatibility();
+            if (!compat.compatible) {
+                document.getElementById('loadingSection').style.display = 'none';
+                alert('⚠️ Browser Not Compatible\n\n' + compat.reason + '\n\n' + (compat.recommendation || ''));
+                return false;
+            }
+            if (compat.warning) {
+                console.warn(compat.warning);
+            }
+            return true;
+        }
+
+        // Auto-initialize AI on page load
+        async function autoInitialize() {
+            console.log('🚀 Starting automatic AI initialization...');
+            
+            try {
+                // Check compatibility first
+                if (!await checkCompatibility()) {
+                    return;
+                }
+
+                // Show loading section
+                const loadingSection = document.getElementById('loadingSection');
+                const progressFill = document.getElementById('progressFill');
+                const loadingText = document.getElementById('loadingText');
+                
+                loadingSection.style.display = 'block';
+                loadingText.textContent = 'Starting AI engine...';
+                console.log('📦 Calling webLLM.initialize with model:', AINSIGHT_MODEL);
+
+                const result = await webLLM.initialize(AINSIGHT_MODEL, (progress) => {
+                    console.log('📊 Init progress:', progress);
+                    
+                    if (progress.progress !== undefined) {
+                        const percent = Math.round(progress.progress * 100);
+                        progressFill.style.width = percent + '%';
+                        progressFill.textContent = percent + '%';
+                        console.log(`⏳ Download: ${percent}%`);
+                    }
+                    
+                    if (progress.text) {
+                        loadingText.textContent = progress.text;
+                    }
+                });
+
+                console.log('🎯 Initialization result:', result);
+                loadingSection.style.display = 'none';
+
+                if (result.success) {
+                    document.getElementById('mainContent').style.display = 'grid';
+                    updateStatus();
+                    addSystemMessage(`✅ ${result.message}`);
+                    console.log('✅ AI Engine ready for use!');
+                } else {
+                    console.error('❌ Init failed:', result);
+                    alert('❌ Failed to initialize AI:\n\n' + result.error + '\n\n' + (result.suggestion || ''));
+                    // Show a retry button
+                    loadingSection.style.display = 'block';
+                    loadingSection.innerHTML = `
+                        <h3 style="color: var(--error);">❌ Initialization Failed</h3>
+                        <p style="color: var(--text-secondary);">${result.error}</p>
+                        <button onclick="location.reload()" style="margin-top: 1rem;">Retry</button>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Auto-init error:', error);
+                document.getElementById('loadingSection').innerHTML = `
+                    <h3 style="color: var(--error);">❌ Error During Initialization</h3>
+                    <p style="color: var(--text-secondary);">${error.message}</p>
+                    <button onclick="location.reload()" style="margin-top: 1rem;">Retry</button>
+                `;
+            }
+        }
+
+        // Update status badges
+        function updateStatus() {
+            const status = webLLM.getStatus();
+            const badges = document.getElementById('statusBadges');
+            
+            badges.innerHTML = '';
+            
+            if (status.initialized) {
+                badges.innerHTML += `<span class="status-badge status-online">🟢 AI Ready</span>`;
+                badges.innerHTML += `<span class="status-badge" style="background: #667eea; color: white;">Model: ${status.modelInfo?.name}</span>`;
+                
+                if (!navigator.onLine) {
+                    badges.innerHTML += `<span class="status-badge status-offline">📴 Offline Mode (Working!)</span>`;
+                }
+            }
+        }
+
+        // Chat functionality
+        function addMessage(content, role) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.textContent = content;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function addSystemMessage(content) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message system';
+            messageDiv.textContent = content;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        document.getElementById('sendButton').onclick = async function() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            addSystemMessage('💭 AI is thinking...');
+
+            const response = await webLLM.chat(message);
+
+            // Remove typing indicator
+            const messages = document.getElementById('chatMessages');
+            messages.removeChild(messages.lastChild);
+
+            if (response.success) {
+                addMessage(response.message, 'assistant');
+            } else {
+                if (response.needsReload) {
+                    addSystemMessage('❌ ' + response.error);
+                    addSystemMessage('🔄 Please refresh the page (F5) to restart the AI engine.');
+                } else {
+                    addSystemMessage('❌ Error: ' + response.error);
+                }
+            }
+        };
+
+        document.getElementById('clearChatButton').onclick = function() {
+            webLLM.clearHistory();
+            const messagesDiv = document.getElementById('chatMessages');
+            messagesDiv.innerHTML = '<div class="message system">Chat cleared! Start a new conversation.</div>';
+        };
+
+        // Quick actions
+        window.quickSummarize = async function() {
+            const input = document.getElementById('summarizeInput').value;
+            const output = document.getElementById('summaryOutput');
+            
+            output.style.display = 'block';
+            output.textContent = '⏳ Summarizing...';
+            output.className = 'output';
+
+            const result = await webLLM.summarizeDocument(input);
+
+            if (result.success) {
+                output.textContent = result.text;
+                output.className = 'output success';
+            } else {
+                output.textContent = 'Error: ' + result.error;
+                output.className = 'output';
+            }
+        };
+
+        window.quickDraftEmail = async function() {
+            const input = document.getElementById('emailInput').value;
+            const output = document.getElementById('emailOutput');
+            
+            output.style.display = 'block';
+            output.textContent = '⏳ Drafting email...';
+            output.className = 'output';
+
+            const result = await webLLM.draftEmail(input);
+
+            if (result.success) {
+                output.textContent = result.text;
+                output.className = 'output success';
+            } else {
+                output.textContent = 'Error: ' + result.error;
+                output.className = 'output';
+            }
+        };
+
+        window.quickExtractTasks = async function() {
+            const input = document.getElementById('tasksInput').value;
+            const output = document.getElementById('tasksOutput');
+            
+            output.style.display = 'block';
+            output.textContent = '⏳ Extracting tasks...';
+            output.className = 'output';
+
+            const result = await webLLM.extractTasks(input);
+
+            if (result.success) {
+                output.textContent = result.text;
+                output.className = 'output success';
+            } else {
+                output.textContent = 'Error: ' + result.error;
+                output.className = 'output';
+            }
+        };
+
+        // Handle Enter key in chat
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('sendButton').click();
+            }
+        });
+
+        // Monitor online/offline status
+        window.addEventListener('online', updateStatus);
+        window.addEventListener('offline', updateStatus);
+
+        // Initialize status display
+        updateStatus();
+        
+        console.log('🚀 AInSight AI Assistant Ready');
+        console.log('📦 Model: TinyLlama 1.1B');
+        console.log('🔒 Privacy: 100% On-Device Processing');
+        
+        // Auto-start AI initialization when page loads
+        autoInitialize();
+    </script>
+
+    <!-- Three.js 3D Background Animation -->
+    <script>
+        // Initialize Three.js scene
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.getElementById('canvas3d'),
+            alpha: true,
+            antialias: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        camera.position.z = 50;
+
+        // Create particle system
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 3000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 200;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.5,
+            color: 0x00d4ff,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Add glowing spheres
+        const sphereGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        const spheres = [];
+        
+        for (let i = 0; i < 50; i++) {
+            const sphereMaterial = new THREE.MeshBasicMaterial({
+                color: Math.random() > 0.5 ? 0x00d4ff : 0x7c3aed,
+                transparent: true,
+                opacity: 0.6
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.position.set(
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 100,
+                (Math.random() - 0.5) * 100
+            );
+            spheres.push(sphere);
+            scene.add(sphere);
+        }
+
+        // Add connecting lines
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0x00d4ff,
+            transparent: true,
+            opacity: 0.3
+        });
+
+        // Mouse interaction
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate particle system
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+
+            // Animate spheres
+            spheres.forEach((sphere, index) => {
+                sphere.rotation.x += 0.01;
+                sphere.rotation.y += 0.01;
+                sphere.position.y += Math.sin(Date.now() * 0.001 + index) * 0.01;
+            });
+
+            // Camera follows mouse
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        console.log('✨ 3D Background initialized with Three.js');
+    </script>
+</body>
+</html>

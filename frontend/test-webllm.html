@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebLLM Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:disabled {
+            opacity: 0.5;
+        }
+        #status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+        #log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .progress {
+            width: 100%;
+            height: 30px;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 WebLLM Integration Test</h1>
+    
+    <div id="status">
+        <strong>Status:</strong> <span id="statusText">Not initialized</span>
+    </div>
+
+    <button id="checkBtn" onclick="checkBrowser()">1. Check Browser Compatibility</button>
+    <button id="initBtn" onclick="initializeAI()" disabled>2. Initialize AI (TinyLlama - 0.82GB)</button>
+    <button id="testBtn" onclick="testChat()" disabled>3. Test Chat</button>
+
+    <div class="progress" style="display: none;" id="progressBar">
+        <div class="progress-bar" id="progressFill">0%</div>
+    </div>
+
+    <h3>Console Log:</h3>
+    <div id="log"></div>
+
+    <script type="module">
+        import * as webllm from "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.46/+esm";
+        
+        let engine = null;
+        const logDiv = document.getElementById('log');
+
+        function log(message, color = '#0f0') {
+            console.log(message);
+            const line = document.createElement('div');
+            line.style.color = color;
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDiv.appendChild(line);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(text, color = '#000') {
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = text;
+            statusText.style.color = color;
+        }
+
+        window.checkBrowser = async function() {
+            log('🔍 Checking browser compatibility...', '#ff0');
+            
+            try {
+                // Check WebGPU
+                if (!navigator.gpu) {
+                    log('❌ WebGPU not supported!', '#f00');
+                    alert('WebGPU not supported. Please use Chrome 113+ or Edge 113+');
+                    return;
+                }
+                log('✅ WebGPU is supported', '#0f0');
+
+                // Check memory
+                const memory = navigator.deviceMemory || 'Unknown';
+                log(`💾 Device memory: ${memory}GB`, '#0ff');
+
+                // Check if WebLLM loaded
+                log(`📦 WebLLM library: ${typeof webllm}`, '#0ff');
+                log(`📦 CreateMLCEngine: ${typeof webllm.CreateMLCEngine}`, '#0ff');
+
+                // Get available models
+                const models = webllm.prebuiltAppConfig.model_list;
+                log(`📋 Available models: ${models.length}`, '#0ff');
+                
+                updateStatus('Browser compatible! ✅', '#080');
+                document.getElementById('initBtn').disabled = false;
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, '#f00');
+                log(`Stack: ${error.stack}`, '#f00');
+                updateStatus('Compatibility check failed ❌', '#800');
+            }
+        };
+
+        window.initializeAI = async function() {
+            log('🚀 Initializing WebLLM with TinyLlama (q4f32 - standard WebGPU)...', '#ff0');
+            updateStatus('Initializing...', '#00f');
+            document.getElementById('initBtn').disabled = true;
+            document.getElementById('progressBar').style.display = 'block';
+            
+            try {
+                const modelId = 'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC';
+                log(`📥 Loading model: ${modelId}`, '#0ff');
+
+                engine = await webllm.CreateMLCEngine(modelId, {
+                    initProgressCallback: (progress) => {
+                        const percent = Math.round((progress.progress || 0) * 100);
+                        document.getElementById('progressFill').style.width = percent + '%';
+                        document.getElementById('progressFill').textContent = percent + '%';
+                        
+                        if (progress.text) {
+                            log(`📊 ${progress.text}`, '#ff0');
+                        }
+                    }
+                });
+
+                log('✅ AI Engine initialized successfully!', '#0f0');
+                updateStatus('AI Ready! 🎉', '#080');
+                document.getElementById('testBtn').disabled = false;
+                document.getElementById('progressBar').style.display = 'none';
+            } catch (error) {
+                log(`❌ Initialization failed: ${error.message}`, '#f00');
+                log(`Stack: ${error.stack}`, '#f00');
+                updateStatus('Initialization failed ❌', '#800');
+                document.getElementById('initBtn').disabled = false;
+            }
+        };
+
+        window.testChat = async function() {
+            if (!engine) {
+                alert('Engine not initialized!');
+                return;
+            }
+
+            log('💬 Testing chat...', '#ff0');
+            document.getElementById('testBtn').disabled = true;
+
+            try {
+                const response = await engine.chat.completions.create({
+                    messages: [
+                        { role: 'user', content: 'Say hello in 5 words or less' }
+                    ],
+                    max_tokens: 20
+                });
+
+                const message = response.choices[0].message.content;
+                log(`🤖 AI Response: ${message}`, '#0f0');
+                updateStatus('Chat working! ✅', '#080');
+            } catch (error) {
+                log(`❌ Chat failed: ${error.message}`, '#f00');
+                updateStatus('Chat failed ❌', '#800');
+            }
+
+            document.getElementById('testBtn').disabled = false;
+        };
+
+        // Auto-check on load
+        log('🏁 Page loaded. Click "Check Browser Compatibility" to start', '#fff');
+    </script>
+</body>
+</html>
