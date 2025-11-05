@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AInSight AI Assistant - Enterprise AI Chat</title>
+    <link rel="stylesheet" href="css/mission-control-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* Clean Theme - Mission Control Default */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hide cosmic backgrounds */
+        .cosmic-bg {
+            display: none !important;
+        }
+
+        .stars-layer {
+            display: none !important;
+        }
+
+        /* Content styling */
+        nav, .content, .chat-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation fixes */
+        .mc-nav {
+            background: rgba(0, 0, 0, 0.8);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mc-logo {
+            color: white !important;
+            font-weight: 800;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+        }
+
+        .mc-nav-links a {
+            color: white !important;
+        }
+
+        .mc-nav-links a:hover {
+            color: #a855f7 !important;
+        }
+
+        .loading-section {
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-window {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-input-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-input {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .feature-card, .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: inherit;
+        }
+
+        p, li {
+            color: inherit;
+        }
+
+        .chat-header p {
+            color: inherit;
+        }
+
+        .loading-section p {
+            color: inherit;
+        }
+
+        .loading-text {
+            color: inherit;
+        }
+
+        .feature-card-desc {
+            color: inherit;
+        }
+
+        .message {
+            color: inherit;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .message-user {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+        }
+
+        .message-ai {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Chat specific styles */
+        .chat-container {
+            min-height: calc(100vh - 160px);
+            display: flex;
+            flex-direction: column;
+            padding-top: 100px;
+            padding-bottom: 2rem;
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .chat-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 0.5rem;
+        }
+
+        .chat-status {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            background: var(--mc-gray-100);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge.online {
+            background: var(--mc-green);
+            color: white;
+        }
+
+        /* Loading Section */
+        .loading-section {
+            background: white;
+            border: 2px solid var(--mc-gray-200);
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .loading-section h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: var(--mc-gray-100);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--mc-black);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .loading-text {
+            color: var(--mc-gray-600);
+            font-size: 1rem;
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border: 2px solid var(--mc-gray-200);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            min-height: 500px;
+            max-height: 600px;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-lg);
+            max-width: 85%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            color: white !important;
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .message.system {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: white !important;
+            max-width: 100%;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .message-role {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .message-content {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Chat Input */
+        .chat-input-container {
+            padding: 1.5rem;
+            background: var(--mc-gray-50);
+            border-top: 2px solid var(--mc-gray-200);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--mc-gray-300);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--mc-black);
+        }
+
+        .chat-send-btn {
+            padding: 1rem 2rem;
+            background: var(--mc-black);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chat-send-btn:hover:not(:disabled) {
+            background: var(--mc-gray-800);
+            transform: translateY(-2px);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid var(--mc-gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--mc-black);
+            transform: translateY(-2px);
+        }
+
+        .feature-card-title {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card-desc {
+            font-size: 0.875rem;
+            color: var(--mc-gray-600);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 1rem;
+            background: var(--mc-gray-100);
+            border-radius: var(--radius-lg);
+            max-width: 100px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--mc-gray-500);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Override white colors to use theme defaults */
+        * {
+            color: inherit;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--mc-black);
+        }
+
+        p {
+            color: var(--mc-gray-700);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="mc-nav">
+        <div class="mc-container">
+            <div class="mc-nav-content">
+                <div class="mc-logo">AInSight</div>
+                <ul class="mc-nav-links">
+                    <li><a href="index-cosmic.html">Home</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="#" style="opacity: 0.5;">AI Chat</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="mc-container chat-container">
+        <!-- Header -->
+        <div class="chat-header mc-animate">
+            <h1 style="color: #1a1a1a;">AI ASSISTANT</h1>
+            <p style="color: #4a5568; font-size: 1.125rem; margin-bottom: 1rem;">
+                Powered by WebLLM • 100% Private • Zero Cost
+            </p>
+            <div class="chat-status" id="statusBadges">
+                <span class="status-badge" style="color: #667eea; background: rgba(102, 126, 234, 0.1); border: 1px solid #667eea;">⚙️ Initializing...</span>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection" class="loading-section mc-animate-delay-1" style="display: block !important; background: rgba(102, 126, 234, 0.05) !important; border: 2px solid rgba(102, 126, 234, 0.2) !important; padding: 2rem !important; border-radius: 12px !important;">
+            <h3 style="color: #1a1a1a !important;">🚀 Initializing AI Engine</h3>
+            <p class="loading-text" id="loadingText" style="color: #4a5568 !important;">Preparing TinyLlama model...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p id="downloadInfo" style="color: #4a5568 !important; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    📦 Downloading: <span id="downloadedSize">0 MB</span> / <span id="totalSize">~820 MB</span>
+                </p>
+                <p id="downloadSpeed" style="color: #4a5568 !important; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                    ⚡ Speed: <span id="speedValue">Calculating...</span>
+                </p>
+                <p id="timeRemaining" style="color: #4a5568 !important; font-size: 0.875rem;">
+                    ⏱️ Time remaining: <span id="timeValue">Calculating...</span>
+                </p>
+            </div>
+            <p style="color: #718096 !important; font-size: 0.875rem; margin-top: 1rem;">
+                First time may take 1-2 minutes • Model cached for future use
+            </p>
+        </div>
+
+        <!-- Chat Interface (hidden until initialized) -->
+        <div id="mainContent" style="display: none;" class="mc-animate-delay-2">
+            <!-- Feature Quick Actions -->
+            <div class="features-grid">
+                <div class="feature-card" onclick="useFeature('code')">
+                    <div class="feature-card-title">💻 Code Generation</div>
+                    <div class="feature-card-desc">Generate complete code snippets</div>
+                </div>
+                <div class="feature-card" onclick="useFeature('email')">
+                    <div class="feature-card-title">✉️ Email Draft</div>
+                    <div class="feature-card-desc">Write professional emails</div>
+                </div>
+                <div class="feature-card" onclick="useFeature('tasks')">
+                    <div class="feature-card-title">📋 Extract Tasks</div>
+                    <div class="feature-card-desc">Pull action items from text</div>
+                </div>
+                <div class="feature-card" onclick="useFeature('summarize')">
+                    <div class="feature-card-title">📄 Summarize</div>
+                    <div class="feature-card-desc">Condense long documents</div>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-interface" style="margin-top: 2rem;">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message system">
+                        <strong>🤖 AI Assistant Ready</strong><br>
+                        Ask me anything! I can help with code, writing, analysis, and more.
+                        <br><br>
+                        💡 <strong>Tip:</strong> For code snippets, be specific: "Write a Snake game in C++"
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            class="chat-input" 
+                            placeholder="Ask anything... (e.g., 'Write a Snake game in C++', 'Explain quantum computing')"
+                            onkeypress="if(event.key === 'Enter') sendMessage()"
+                        >
+                        <button id="sendButton" class="chat-send-btn" onclick="sendMessage()">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebLLM Integration -->
+    <script type="module">
+        import { WebLLMAIEngine } from './js/webllm-ai.js';
+
+        // Constants
+        const AINSIGHT_MODEL = 'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC';
+        
+        // Initialize WebLLM
+        window.webLLM = new WebLLMAIEngine();
+
+        // Check compatibility
+        async function checkCompatibility() {
+            const compat = await WebLLMAIEngine.checkCompatibility();
+            console.log('Compatibility check:', compat);
+
+            if (!compat.compatible) {
+                alert('❌ Your browser doesn't support WebLLM:\n\n' + compat.reason + '\n\n' + compat.recommendation);
+                return false;
+            }
+            return true;
+        }
+
+        // Auto-initialize AI on page load
+        async function autoInitialize() {
+            console.log('🚀 Starting automatic AI initialization...');
+            
+            try {
+                if (!await checkCompatibility()) {
+                    return;
+                }
+
+                const loadingSection = document.getElementById('loadingSection');
+                const progressFill = document.getElementById('progressFill');
+                const loadingText = document.getElementById('loadingText');
+                const downloadedSize = document.getElementById('downloadedSize');
+                const totalSize = document.getElementById('totalSize');
+                const speedValue = document.getElementById('speedValue');
+                const timeValue = document.getElementById('timeValue');
+                
+                loadingSection.style.display = 'block';
+                loadingText.textContent = 'Starting AI engine...';
+
+                // Track download progress
+                let startTime = Date.now();
+                let lastProgress = 0;
+                let lastTime = Date.now();
+                
+                // Model sizes (approximate)
+                const modelSizes = {
+                    'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC': 820,  // MB
+                    'Phi-3-mini-4k-instruct-q4f32_1-MLC': 5350,
+                    'Mistral-7B-Instruct-v0.3-q4f32_1-MLC': 5490,
+                };
+                
+                const estimatedSize = modelSizes[AINSIGHT_MODEL] || 820;
+                totalSize.textContent = estimatedSize >= 1000 
+                    ? `~${(estimatedSize / 1024).toFixed(2)} GB` 
+                    : `~${estimatedSize} MB`;
+
+                const result = await webLLM.initialize(AINSIGHT_MODEL, (progress) => {
+                    console.log('📊 Init progress:', progress);
+                    
+                    if (progress.progress !== undefined) {
+                        const percent = Math.round(progress.progress * 100);
+                        const downloaded = (estimatedSize * progress.progress);
+                        
+                        progressFill.style.width = percent + '%';
+                        progressFill.textContent = percent + '%';
+                        
+                        // Update downloaded size
+                        if (downloaded >= 1000) {
+                            downloadedSize.textContent = `${(downloaded / 1024).toFixed(2)} GB`;
+                        } else {
+                            downloadedSize.textContent = `${downloaded.toFixed(0)} MB`;
+                        }
+                        
+                        // Calculate speed
+                        const currentTime = Date.now();
+                        const timeDiff = (currentTime - lastTime) / 1000; // seconds
+                        const progressDiff = progress.progress - lastProgress;
+                        
+                        if (timeDiff > 0 && progressDiff > 0) {
+                            const mbDownloaded = estimatedSize * progressDiff;
+                            const speed = mbDownloaded / timeDiff; // MB/s
+                            
+                            if (speed >= 1) {
+                                speedValue.textContent = `${speed.toFixed(2)} MB/s`;
+                            } else {
+                                speedValue.textContent = `${(speed * 1024).toFixed(0)} KB/s`;
+                            }
+                            
+                            // Estimate time remaining
+                            const remainingProgress = 1 - progress.progress;
+                            const remainingMB = estimatedSize * remainingProgress;
+                            const remainingSeconds = remainingMB / speed;
+                            
+                            if (remainingSeconds > 60) {
+                                timeValue.textContent = `~${Math.ceil(remainingSeconds / 60)} min`;
+                            } else {
+                                timeValue.textContent = `~${Math.ceil(remainingSeconds)} sec`;
+                            }
+                            
+                            lastProgress = progress.progress;
+                            lastTime = currentTime;
+                        }
+                    }
+                    
+                    if (progress.text) {
+                        loadingText.textContent = progress.text;
+                    }
+                });
+
+                console.log('🎯 Initialization result:', result);
+                loadingSection.style.display = 'none';
+
+                if (result.success) {
+                    document.getElementById('mainContent').style.display = 'block';
+                    updateStatus();
+                    console.log('✅ AI Engine ready for use!');
+                } else {
+                    console.error('❌ Init failed:', result);
+                    loadingSection.innerHTML = `
+                        <h3 style="color: var(--mc-gray-700);">❌ Initialization Failed</h3>
+                        <p style="color: var(--mc-gray-600);">${result.error}</p>
+                        <button onclick="location.reload()" class="mc-btn mc-btn-primary" style="margin-top: 1.5rem;">
+                            Retry
+                        </button>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Auto-init error:', error);
+                document.getElementById('loadingSection').innerHTML = `
+                    <h3 style="color: var(--mc-gray-700);">❌ Error During Initialization</h3>
+                    <p style="color: var(--mc-gray-600);">${error.message}</p>
+                    <button onclick="location.reload()" class="mc-btn mc-btn-primary" style="margin-top: 1.5rem;">
+                        Retry
+                    </button>
+                `;
+            }
+        }
+
+        // Update status badges
+        function updateStatus() {
+            const status = webLLM.getStatus();
+            const badges = document.getElementById('statusBadges');
+            
+            badges.innerHTML = '';
+            
+            if (status.initialized) {
+                badges.innerHTML = `
+                    <span class="status-badge online">✓ AI Ready</span>
+                    <span class="status-badge">Model: TinyLlama 1.1B</span>
+                    <span class="status-badge">🔒 100% Private</span>
+                `;
+            }
+        }
+
+        // Chat functionality
+        function addMessage(content, role) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const roleLabel = role === 'user' ? 'YOU' : 'AI ASSISTANT';
+            messageDiv.innerHTML = `
+                <div class="message-role">${roleLabel}</div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        window.sendMessage = async function() {
+            const input = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendButton');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+            sendBtn.disabled = true;
+
+            try {
+                const response = await webLLM.chat(message);
+                addMessage(response, 'assistant');
+            } catch (error) {
+                addMessage('Sorry, an error occurred: ' + error.message, 'assistant');
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        };
+
+        // Feature shortcuts
+        window.useFeature = function(feature) {
+            const input = document.getElementById('chatInput');
+            const prompts = {
+                code: 'Write a Snake game in Python with proper game loop and collision detection',
+                email: 'Draft a professional email to my team about the new project timeline',
+                tasks: 'Extract action items from this meeting: "We need to finalize the design by Friday, review the budget next week, and schedule a demo for stakeholders"',
+                summarize: 'Summarize this in 3 key points: '
+            };
+            input.value = prompts[feature] || '';
+            input.focus();
+        };
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', autoInitialize);
+
+        // Make functions available globally
+        window.updateStatus = updateStatus;
+    </script>
+</body>
+</html>

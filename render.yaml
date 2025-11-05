@@ -1,0 +1,30 @@
+# Render Static Site Configuration
+# For deploying the frontend to Render
+
+services:
+  # Frontend - Static Site
+  - type: web
+    name: ainsight-frontend
+    env: static
+    buildCommand: echo "No build needed - static files"
+    staticPublishPath: ./frontend
+    headers:
+      - path: /*
+        name: Cross-Origin-Embedder-Policy
+        value: require-corp
+      - path: /*
+        name: Cross-Origin-Opener-Policy
+        value: same-origin
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+      - path: /*
+        name: Access-Control-Allow-Methods
+        value: GET, POST, OPTIONS
+      - path: /*
+        name: Access-Control-Allow-Headers
+        value: "*"
+    routes:
+      - type: rewrite
+        source: /
+        destination: /index-cosmic.html

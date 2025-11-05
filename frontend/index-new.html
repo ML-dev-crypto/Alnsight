@@ -8,8 +8,65 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Pitch Black Space Theme Override */
+        body {
+            background: #000000 !important;
+        }
+
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 0;
+        }
+
+        .stars-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 300%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        .star.tiny {
+            width: 1px;
+            height: 1px;
+        }
+
+        .star.small {
+            width: 1.5px;
+            height: 1.5px;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        nav, section, footer {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
 </head>
 <body>
+    <!-- Cosmic Background -->
+    <div class="cosmic-bg"></div>
+    <div class="stars-layer" id="starsLayer"></div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -509,5 +566,35 @@ console.log(result.response);
     </div>
 
     <script src="js/modern-theme.js"></script>
+
+    <!-- Generate Stars -->
+    <script>
+        function generateStars() {
+            const starsLayer = document.getElementById('starsLayer');
+            
+            // Create 500 tiny stars
+            for (let i = 0; i < 500; i++) {
+                const star = document.createElement('div');
+                star.className = 'star tiny';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 300 + '%';
+                star.style.setProperty('--duration', (Math.random() * 4 + 3) + 's');
+                starsLayer.appendChild(star);
+            }
+
+            // Add some slightly bigger stars
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star small';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 300 + '%';
+                star.style.setProperty('--duration', (Math.random() * 5 + 2) + 's');
+                starsLayer.appendChild(star);
+            }
+        }
+
+        // Generate stars on page load
+        generateStars();
+    </script>
 </body>
 </html>

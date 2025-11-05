@@ -4,7 +4,7 @@ function checkAuth() {
     const user = getCurrentUser();
     
     if (!token || !user) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
         return false;
     }
     
@@ -20,7 +20,7 @@ function checkAuth() {
 
 function logout() {
     removeToken();
-    window.location.href = 'index.html';
+    window.location.href = 'login.html';
 }
 
 // Initialize auth

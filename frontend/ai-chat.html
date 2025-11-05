@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AInSight AI Assistant - Enterprise AI Chat</title>
+    <link rel="stylesheet" href="css/mission-control-theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* Ensure all text is visible on light background */
+        body {
+            background: var(--mc-gray-50);
+            color: var(--mc-black);
+        }
+
+        /* Loading section styling */
+        #loadingSection {
+            display: block !important;
+            background: rgba(102, 126, 234, 0.05) !important;
+            border: 2px solid rgba(102, 126, 234, 0.2) !important;
+            padding: 2rem !important;
+            border-radius: 12px !important;
+            margin: 2rem auto !important;
+            max-width: 600px !important;
+        }
+
+        #loadingSection h3 {
+            color: #1a1a1a !important;
+            margin-bottom: 1rem;
+        }
+
+        #loadingSection p {
+            color: #4a5568 !important;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 8px;
+            height: 30px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: width 0.3s ease;
+        }
+
+        /* Chat interface */
+        #mainContent {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .chat-window {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 500px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .message {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            margin-left: auto;
+        }
+
+        .message.assistant {
+            background: rgba(72, 187, 120, 0.1);
+            border-left: 4px solid #48bb78;
+            margin-right: auto;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .send-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="mc-nav">
+        <div class="mc-container">
+            <div class="mc-nav-content">
+                <div class="mc-logo">AInSight</div>
+                <ul class="mc-nav-links">
+                    <li><a href="index-cosmic.html">Home</a></li>
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="ai-chat.html">AI Chat</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="mc-container">
+        <!-- Header -->
+        <div class="chat-header" style="text-align: center; padding: 2rem 0;">
+            <h1 style="color: #1a1a1a; font-size: 3rem; margin-bottom: 0.5rem;">AI ASSISTANT</h1>
+            <p style="color: #4a5568; font-size: 1.125rem;">
+                Powered by WebLLM • 100% Private • Zero Cost
+            </p>
+            <div style="margin-top: 1rem;">
+                <span id="statusBadge" style="display: inline-block; padding: 0.5rem 1rem; background: rgba(102, 126, 234, 0.1); color: #667eea; border: 1px solid #667eea; border-radius: 20px; font-weight: 600;">
+                    ⚙️ Initializing...
+                </span>
+            </div>
+        </div>
+
+        <!-- Loading Section -->
+        <div id="loadingSection">
+            <h3>🚀 Initializing AI Engine</h3>
+            <p id="loadingText">Preparing TinyLlama model...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;">0%</div>
+            </div>
+            <div style="margin-top: 1rem; text-align: left;">
+                <p style="margin: 0.5rem 0; color: #4a5568 !important;">
+                    📦 Downloading: <span id="downloadedSize">0 MB</span> / <span id="totalSize">~820 MB</span>
+                </p>
+                <p style="margin: 0.5rem 0; color: #4a5568 !important;">
+                    ⚡ Speed: <span id="speedValue">Calculating...</span>
+                </p>
+                <p style="margin: 0.5rem 0; color: #4a5568 !important;">
+                    ⏱️ Time remaining: <span id="timeValue">Calculating...</span>
+                </p>
+            </div>
+            <p style="color: #718096 !important; margin-top: 1rem; font-size: 0.875rem;">
+                First time may take 1-2 minutes • Model cached for future use
+            </p>
+        </div>
+
+        <!-- Chat Interface (hidden until initialized) -->
+        <div id="mainContent" style="display: none;">
+            <div class="chat-window" id="chatWindow">
+                <div class="message system" style="text-align: center; background: rgba(251, 191, 36, 0.1); border-left: 4px solid #fbbf24; max-width: 100%;">
+                    AI Assistant is ready! Ask me anything.
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    id="chatInput" 
+                    class="chat-input" 
+                    placeholder="Type your message here..."
+                    onkeypress="if(event.key === 'Enter') sendMessage()"
+                >
+                <button id="sendBtn" class="send-btn" onclick="sendMessage()">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- WebLLM Integration Script -->
+    <script type="module">
+        import webLLM from './js/webllm-ai.js';
+
+        const AINSIGHT_MODEL = 'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC';
+
+        let isInitialized = false;
+
+        // DOM elements
+        const loadingSection = document.getElementById('loadingSection');
+        const mainContent = document.getElementById('mainContent');
+        const statusBadge = document.getElementById('statusBadge');
+        const progressFill = document.getElementById('progressFill');
+        const loadingText = document.getElementById('loadingText');
+        const downloadedSize = document.getElementById('downloadedSize');
+        const totalSize = document.getElementById('totalSize');
+        const speedValue = document.getElementById('speedValue');
+        const timeValue = document.getElementById('timeValue');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Model sizes (MB)
+        const modelSizes = {
+            'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC': 820,
+            'Phi-3-mini-4k-instruct-q4f32_1-MLC': 5350,
+            'Mistral-7B-Instruct-v0.3-q4f32_1-MLC': 5490,
+        };
+
+        // Initialize on page load with retry logic
+        async function initializeAI(retryCount = 0) {
+            const MAX_RETRIES = 3;
+            
+            console.log('🚀 Starting AI initialization...');
+            console.log('📍 Current location:', window.location.href);
+            console.log('🌐 Navigator online:', navigator.onLine);
+            console.log('💾 Cache API available:', 'caches' in window);
+            console.log('🔄 Retry attempt:', retryCount);
+            
+            try {
+                loadingSection.style.display = 'block';
+                mainContent.style.display = 'none';
+                statusBadge.textContent = '⚙️ Initializing...';
+                statusBadge.style.background = 'rgba(102, 126, 234, 0.1)';
+                statusBadge.style.color = '#667eea';
+
+                const estimatedSize = modelSizes[AINSIGHT_MODEL] || 820;
+                totalSize.textContent = estimatedSize >= 1000 
+                    ? `~${(estimatedSize / 1024).toFixed(2)} GB` 
+                    : `~${estimatedSize} MB`;
+
+                let startTime = Date.now();
+                let lastProgress = 0;
+                let lastTime = Date.now();
+                
+                // Check if already cached
+                loadingText.textContent = 'Checking for cached model...';
+
+                const result = await webLLM.initialize(AINSIGHT_MODEL, (progress) => {
+                    console.log('📊 Progress:', progress);
+                    
+                    // Clear error badge during download
+                    if (progress.progress !== undefined && progress.progress > 0) {
+                        statusBadge.textContent = '📥 Downloading...';
+                        statusBadge.style.background = 'rgba(102, 126, 234, 0.1)';
+                        statusBadge.style.color = '#667eea';
+                        statusBadge.style.border = '1px solid #667eea';
+                    }
+                    
+                    if (progress.progress !== undefined) {
+                        const percent = Math.round(progress.progress * 100);
+                        const downloaded = estimatedSize * progress.progress;
+                        
+                        progressFill.style.width = percent + '%';
+                        progressFill.textContent = percent + '%';
+                        
+                        // Update downloaded size
+                        downloadedSize.textContent = downloaded >= 1000
+                            ? `${(downloaded / 1024).toFixed(2)} GB`
+                            : `${downloaded.toFixed(0)} MB`;
+                        
+                        // Calculate speed
+                        const now = Date.now();
+                        const timeDiff = (now - lastTime) / 1000; // seconds
+                        const progressDiff = progress.progress - lastProgress;
+                        
+                        if (timeDiff > 0.5 && progressDiff > 0) {
+                            const mbDownloaded = estimatedSize * progressDiff;
+                            const speed = mbDownloaded / timeDiff; // MB/s
+                            speedValue.textContent = speed >= 1 
+                                ? `${speed.toFixed(2)} MB/s`
+                                : `${(speed * 1024).toFixed(0)} KB/s`;
+                            
+                            // Calculate time remaining
+                            const remaining = estimatedSize * (1 - progress.progress);
+                            const timeRemaining = remaining / speed; // seconds
+                            
+                            if (timeRemaining < 60) {
+                                timeValue.textContent = `${Math.ceil(timeRemaining)}s`;
+                            } else {
+                                const minutes = Math.floor(timeRemaining / 60);
+                                const seconds = Math.ceil(timeRemaining % 60);
+                                timeValue.textContent = `${minutes}m ${seconds}s`;
+                            }
+                            
+                            lastProgress = progress.progress;
+                            lastTime = now;
+                        }
+                    }
+                    
+                    if (progress.text) {
+                        loadingText.textContent = progress.text;
+                    }
+                });
+
+                console.log('🔍 Initialization result:', result);
+                
+                if (result && result.success) {
+                    console.log('✅ AI initialized successfully!');
+                    isInitialized = true;
+                    
+                    loadingSection.style.display = 'none';
+                    mainContent.style.display = 'block';
+                    statusBadge.textContent = '✓ Online';
+                    statusBadge.style.background = 'rgba(72, 187, 120, 0.1)';
+                    statusBadge.style.color = '#48bb78';
+                    statusBadge.style.border = '1px solid #48bb78';
+                    
+                    chatInput.focus();
+                } else if (result && result.error) {
+                    throw new Error(result.error);
+                } else {
+                    throw new Error('Initialization failed - no response from engine');
+                }
+            } catch (error) {
+                console.error('❌ Initialization error:', error);
+                console.error('Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                });
+                
+                // Check if we should retry (network errors from HuggingFace CDN)
+                const isNetworkError = error.message.includes('network') || 
+                                      error.message.includes('fetch') || 
+                                      error.message.includes('ERR_FAILED') ||
+                                      error.message.includes('Cache');
+                
+                if (isNetworkError && retryCount < MAX_RETRIES) {
+                    console.log(`🔄 Network error detected. Retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+                    statusBadge.textContent = '🔄 Retrying...';
+                    loadingText.textContent = `Network error. Retrying download (attempt ${retryCount + 1}/${MAX_RETRIES})...`;
+                    
+                    // Wait 2 seconds before retry
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    return initializeAI(retryCount + 1);
+                }
+                
+                statusBadge.textContent = '❌ Error';
+                statusBadge.style.background = 'rgba(239, 68, 68, 0.1)';
+                statusBadge.style.color = '#ef4444';
+                
+                let errorMessage = 'Initialization failed: ' + error.message;
+                
+                // Provide helpful error messages
+                if (isNetworkError) {
+                    errorMessage = '⚠️ Network Error - Cannot download model from HuggingFace CDN\n\n';
+                    errorMessage += 'Solutions:\n';
+                    errorMessage += '1. Check your internet connection\n';
+                    errorMessage += '2. VPN or firewall may be blocking HuggingFace\n';
+                    errorMessage += '3. Try a different network (mobile hotspot?)\n';
+                    errorMessage += '4. HuggingFace CDN might be temporarily down\n';
+                    errorMessage += '5. Clear browser cache and try again\n\n';
+                    errorMessage += 'The model downloads from HuggingFace servers (~820MB)';
+                } else if (error.message.includes('WebGPU')) {
+                    errorMessage = '⚠️ WebGPU not supported. Please use Chrome 113+ or Edge 113+';
+                } else if (error.message.includes('memory')) {
+                    errorMessage = '⚠️ Insufficient memory. Close some tabs and try again.';
+                }
+                
+                loadingText.innerHTML = errorMessage.replace(/\n/g, '<br>');
+                
+                // Add retry button
+                const retryBtn = document.createElement('button');
+                retryBtn.textContent = '🔄 Retry Initialization';
+                retryBtn.style.cssText = 'margin-top: 1rem; padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;';
+                retryBtn.onclick = () => {
+                    const existingBtn = loadingSection.querySelector('button');
+                    if (existingBtn) existingBtn.remove();
+                    initializeAI(0);
+                };
+                
+                // Remove old button if exists
+                const existingBtn = loadingSection.querySelector('button');
+                if (existingBtn) existingBtn.remove();
+                
+                loadingSection.appendChild(retryBtn);
+            }
+        }
+
+        // Send message with streaming
+        window.sendMessage = async function() {
+            if (!isInitialized) {
+                alert('AI is still initializing. Please wait...');
+                return;
+            }
+
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+            sendBtn.disabled = true;
+
+            // Add assistant placeholder
+            const assistantDiv = document.createElement('div');
+            assistantDiv.className = 'message assistant';
+            assistantDiv.textContent = '⏳ Thinking...';
+            chatWindow.appendChild(assistantDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+
+            try {
+                console.log('🤖 Generating response...');
+                const startTime = Date.now();
+                
+                const response = await webLLM.chat(message, {
+                    temperature: 0.7,
+                    max_tokens: 512,  // Balanced for speed and quality
+                    top_p: 0.9
+                });
+                
+                const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+                console.log(`✅ Response generated in ${duration}s`);
+                
+                // Update with actual response
+                if (response.success) {
+                    assistantDiv.textContent = response.message;
+                } else {
+                    assistantDiv.textContent = '❌ Error: ' + (response.error || 'Unknown error');
+                    assistantDiv.style.borderLeft = '4px solid #ef4444';
+                    assistantDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+                }
+                
+            } catch (error) {
+                console.error('❌ Chat error:', error);
+                assistantDiv.textContent = '❌ Sorry, I encountered an error: ' + error.message;
+                assistantDiv.style.borderLeft = '4px solid #ef4444';
+                assistantDiv.style.background = 'rgba(239, 68, 68, 0.1)';
+            } finally {
+                sendBtn.disabled = false;
+                chatInput.focus();
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        };
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            chatWindow.appendChild(messageDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Auto-initialize on page load
+        window.addEventListener('DOMContentLoaded', initializeAI);
+    </script>
+</body>
+</html>

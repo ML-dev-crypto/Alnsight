@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AInSight - Enterprise AI Platform for the Modern Age</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            background: #000;
+        }
+
+        /* Fixed Cosmic Background - Pitch Black */
+        .cosmic-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: #000000;
+        }
+
+        /* Sunrise Horizon - Visible at start */
+        .sunrise-horizon {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50vh;
+            z-index: 2;
+            background: linear-gradient(to top,
+                #ff8c42 0%,
+                #ff6b35 5%,
+                #ffd93d 15%,
+                #ffb347 25%,
+                #ec4899 35%,
+                #a855f7 45%,
+                #6b2d5c 55%,
+                #2d1b4e 70%,
+                transparent 100%
+            );
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .sunrise-horizon.fade {
+            opacity: 0;
+        }
+
+        /* Stars Layer */
+        .stars-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite;
+        }
+
+        /* Tiny stars only */
+        .star.tiny {
+            width: 1px;
+            height: 1px;
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .star.small {
+            width: 1.5px;
+            height: 1.5px;
+            box-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* Parallax Layers */
+        .parallax-layer {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* No planets - pure space */
+
+        /* Content Container */
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+            z-index: 100;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.7;
+        }
+
+        .cta-button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.6);
+        }
+
+        /* Section Styling */
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 900;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 800;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: clamp(1.125rem, 2vw, 1.5rem);
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(251, 191, 36, 0.4);
+        }
+
+        .glow-text {
+            text-shadow: 0 0 40px rgba(168, 85, 247, 0.6);
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(168, 85, 247, 0.6);
+            box-shadow: 0 20px 60px rgba(168, 85, 247, 0.3);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+        }
+
+        /* Button */
+        .primary-button {
+            display: inline-block;
+            padding: 1.25rem 3rem;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .primary-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.8);
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 900;
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Fade in animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 6rem 1.5rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Cosmic Background -->
+    <div class="cosmic-background"></div>
+    
+    <!-- Sunrise Horizon -->
+    <div class="sunrise-horizon" id="sunriseHorizon"></div>
+    
+    <!-- Stars Layer -->
+    <div class="stars-layer" id="starsLayer"></div>
+
+    <!-- Parallax Layers -->
+    <div class="parallax-layer" id="parallaxLayer" style="z-index: 3;">
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Navigation -->
+        <nav>
+            <div class="nav-content">
+                <div class="logo">AInSight</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="ai-chat.html">AI Chat</a></li>
+                    <li><a href="login.html">Login</a></li>
+                </ul>
+                <button class="cta-button" onclick="window.location.href='login.html'">GET STARTED</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home">
+            <div class="section-content fade-in">
+                <div style="font-size: 1rem; letter-spacing: 0.2em; margin-bottom: 1rem; opacity: 0.8;">AINSIGHT</div>
+                <h1>THE ENTERPRISE AI<br>PLATFORM FOR THE<br><span class="highlight">MODERN AGE</span></h1>
+                <p class="subtitle">
+                    Privacy-first AI that runs entirely in your browser. No servers, no API costs, 
+                    no data leaving your device. The future of enterprise AI is here.
+                </p>
+                <a href="ai-chat.html" class="primary-button">START YOUR MISSION</a>
+            </div>
+        </section>
+
+        <!-- Value Prop Section -->
+        <section>
+            <div class="section-content fade-in">
+                <h2><span class="glow-text">WORLD-CLASS AI CAPABILITIES</span><br>
+                CRAFTED FOR PRIVACY, <span class="highlight">SUPERCHARGED BY TECHNOLOGY</span></h2>
+                <p class="subtitle">
+                    AInSight empowers organizations with cutting-edge AI that respects privacy, 
+                    eliminates costs, and works anywhere—even offline.
+                </p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section>
+            <div class="section-content fade-in">
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Offline Capable</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">$0</div>
+                        <div class="stat-label">API Costs</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Privacy Guaranteed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">5+</div>
+                        <div class="stat-label">AI Models</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partnership Message -->
+        <section>
+            <div class="section-content fade-in">
+                <h2 style="max-width: 1000px; margin: 0 auto;">
+                    AInSight partners with organizations to deploy AI solutions that turn 
+                    <span class="highlight">bold ideas</span> into <span class="glow-text">the next big thing.</span>
+                </h2>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features">
+            <div class="section-content fade-in">
+                <h2>HOW WE <span class="highlight">EMPOWER</span></h2>
+                <p class="subtitle">Enterprise AI capabilities that run entirely in your browser</p>
+                
+                <div class="cards-grid">
+                    <div class="card">
+                        <span class="card-icon">🚀</span>
+                        <h3>Privacy First</h3>
+                        <p>All AI processing happens locally in your browser. Your data never leaves your device, ensuring complete privacy and security.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">⚡</span>
+                        <h3>Zero Cost AI</h3>
+                        <p>No API fees, no per-token charges. Once deployed, your AI runs indefinitely without ongoing expenses.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">🌐</span>
+                        <h3>Offline Ready</h3>
+                        <p>Works anywhere, even without internet. Perfect for field operations, secure environments, or unreliable connectivity.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">💻</span>
+                        <h3>Code Generation</h3>
+                        <p>Generate complete code snippets, debug issues, and get programming assistance in multiple languages.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">✉️</span>
+                        <h3>Smart Writing</h3>
+                        <p>Draft professional emails, create documents, and generate content with AI-powered writing assistance.</p>
+                    </div>
+                    
+                    <div class="card">
+                        <span class="card-icon">📊</span>
+                        <h3>Task Management</h3>
+                        <p>Extract action items, summarize meetings, and organize information automatically from any text.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section>
+            <div class="section-content fade-in">
+                <h2 style="margin-bottom: 2rem;">
+                    READY TO <span class="highlight">TRANSFORM</span><br>YOUR ORGANIZATION?
+                </h2>
+                <p class="subtitle" style="margin-bottom: 3rem;">
+                    Join forward-thinking companies using AInSight for privacy-first AI
+                </p>
+                <a href="ai-chat.html" class="primary-button">TRY AI NOW</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="padding: 4rem 2rem; text-align: center; border-top: 1px solid rgba(168, 85, 247, 0.2);">
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <div class="logo" style="margin-bottom: 2rem;">AInSight</div>
+                <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 2rem;">
+                    Enterprise AI Platform for the Modern Age
+                </p>
+                <p style="color: rgba(255, 255, 255, 0.4); font-size: 0.875rem;">
+                    © 2025 AInSight. Open Source AI Platform.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Generate tiny stars
+        function generateStars() {
+            const starsLayer = document.getElementById('starsLayer');
+            const starCount = 500; // More stars, but tiny
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star tiny';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 300 + '%';
+                star.style.setProperty('--duration', (Math.random() * 4 + 3) + 's');
+                starsLayer.appendChild(star);
+            }
+
+            // Add some slightly bigger stars (but still small)
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star small';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 300 + '%';
+                star.style.setProperty('--duration', (Math.random() * 5 + 2) + 's');
+                starsLayer.appendChild(star);
+            }
+        }
+
+        // Parallax scroll effect
+        function parallaxScroll() {
+            const scrolled = window.pageYOffset;
+            
+            // Fade out sunrise horizon as you scroll
+            const sunriseHorizon = document.getElementById('sunriseHorizon');
+            const horizonOpacity = Math.max(0, 1 - (scrolled / 800));
+            sunriseHorizon.style.opacity = horizonOpacity;
+        }
+
+        // Fade in elements on scroll
+        function fadeInOnScroll() {
+            const elements = document.querySelectorAll('.fade-in');
+            elements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight * 0.8;
+                if (isVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+
+        // Event listeners
+        window.addEventListener('scroll', () => {
+            parallaxScroll();
+            fadeInOnScroll();
+        });
+
+        // Initialize
+        generateStars();
+        fadeInOnScroll();
+        parallaxScroll();
+    </script>
+</body>
+</html>
