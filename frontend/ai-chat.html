@@ -681,17 +681,13 @@
                         <h2>💬 AI Chat Assistant</h2>
                         <div class="model-info">TinyLlama 1.1B • Running locally in your browser</div>
                     </div>
-                    <button onclick="clearChatHistory()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem; font-weight: 600;">
-                        🔄 Clear History
-                    </button>
                 </div>
 
                 <div class="chat-window" id="chatWindow">
                     <div class="message system">
                         <div class="message-content">
                             <strong>✨ Welcome to AInSight AI Assistant</strong><br>
-                            Your personal AI is ready! All conversations stay private and secure in your browser.<br><br>
-                            <small><strong>Note:</strong> TinyLlama is a small model (1.1B) - perfect for privacy but may give unexpected answers. Click "Clear History" button if responses become irrelevant.</small>
+                            Your personal AI is ready! All conversations stay private and secure in your browser.
                         </div>
                     </div>
                 </div>
@@ -973,39 +969,6 @@
             chatWindow.appendChild(messageDiv);
             chatWindow.scrollTop = chatWindow.scrollHeight;
         }
-
-        // Clear chat history
-        window.clearChatHistory = function() {
-            if (confirm('Clear all chat history? This will start a fresh conversation.')) {
-                const chatWindow = window.chatWindow;
-                const webLLM = window.webLLMInstance;
-                
-                if (!chatWindow || !webLLM) {
-                    console.error('❌ Chat window or WebLLM not initialized');
-                    alert('Chat system not ready. Please wait for initialization to complete.');
-                    return;
-                }
-                
-                // Clear the chat window
-                chatWindow.innerHTML = `
-                    <div class="message system">
-                        <div class="message-content">
-                            <strong>✨ Welcome to AInsight AI Chat</strong><br>
-                            Your privacy-first AI assistant powered by WebLLM. All processing happens locally in your browser - no data leaves your device.<br><br>
-                            <em style="opacity: 0.8;">💡 Note: TinyLlama is a small model (1.1B) - perfect for privacy but may give unexpected answers. Click "Clear History" button if responses become irrelevant.</em>
-                        </div>
-                    </div>
-                `;
-                
-                // Clear the chat history in WebLLM
-                try {
-                    webLLM.clearHistory();
-                    console.log('✅ Chat history cleared successfully');
-                } catch (error) {
-                    console.error('❌ Error clearing WebLLM history:', error);
-                }
-            }
-        };
 
         // Auto-initialize on page load
         window.addEventListener('DOMContentLoaded', initializeAI);
