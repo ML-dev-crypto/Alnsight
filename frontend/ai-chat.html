@@ -740,6 +740,10 @@
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
 
+        // Make elements globally accessible for clear history function
+        window.chatWindow = chatWindow;
+        window.webLLMInstance = webLLM;
+
         // Model sizes (MB)
         const modelSizes = {
             'TinyLlama-1.1B-Chat-v1.0-q4f32_1-MLC': 820,
@@ -973,20 +977,33 @@
         // Clear chat history
         window.clearChatHistory = function() {
             if (confirm('Clear all chat history? This will start a fresh conversation.')) {
-                // Clear the chat window except the welcome message
+                const chatWindow = window.chatWindow;
+                const webLLM = window.webLLMInstance;
+                
+                if (!chatWindow || !webLLM) {
+                    console.error('❌ Chat window or WebLLM not initialized');
+                    alert('Chat system not ready. Please wait for initialization to complete.');
+                    return;
+                }
+                
+                // Clear the chat window
                 chatWindow.innerHTML = `
                     <div class="message system">
                         <div class="message-content">
-                            <strong>✨ Chat history cleared!</strong><br>
-                            Starting fresh. Your AI is ready for a new conversation.
+                            <strong>✨ Welcome to AInsight AI Chat</strong><br>
+                            Your privacy-first AI assistant powered by WebLLM. All processing happens locally in your browser - no data leaves your device.<br><br>
+                            <em style="opacity: 0.8;">💡 Note: TinyLlama is a small model (1.1B) - perfect for privacy but may give unexpected answers. Click "Clear History" button if responses become irrelevant.</em>
                         </div>
                     </div>
                 `;
                 
                 // Clear the chat history in WebLLM
-                webLLM.clearHistory();
-                
-                console.log('✅ Chat history cleared');
+                try {
+                    webLLM.clearHistory();
+                    console.log('✅ Chat history cleared successfully');
+                } catch (error) {
+                    console.error('❌ Error clearing WebLLM history:', error);
+                }
             }
         };
 
