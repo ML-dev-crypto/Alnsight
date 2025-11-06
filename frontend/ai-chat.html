@@ -12,15 +12,8 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparen                <div class="chat-header">
-                    <div>
-                        <h2>💬 AI Chat Assistant</h2>
-                        <div class="model-info">TinyLlama 1.1B • Running locally in your browser</div>
-                    </div>
-                    <button onclick="clearChatHistory()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.875rem;">
-                        🔄 Clear History
-                    </button>
-                </div>      }
+            -webkit-tap-highlight-color: transparent;
+        }
 
         html {
             -webkit-text-size-adjust: 100%;
@@ -735,10 +728,6 @@
         const chatWindow = document.getElementById('chatWindow');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
-
-        // Make elements globally accessible for clear history function
-        window.chatWindow = chatWindow;
-        window.webLLMInstance = webLLM;
 
         // Model sizes (MB)
         const modelSizes = {
